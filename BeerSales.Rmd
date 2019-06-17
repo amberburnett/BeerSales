@@ -54,7 +54,28 @@ brewcount<- aggregate(Brewery_id ~ State, BeerNBrew, length)
 names(brewcount)<- c("State", "Brewery_Count")
 brewcount
 ```
+## Median alcohol content and international bitterness unit for each state.
+```{r aggregating medians - IBU}
+IBUvals<- BeerNBrew %>%
+  group_by(State) %>%
+  filter(!is.na(IBU))
+head(IBUvals)
 
-```{r }
+IBUmedians<- aggregate(IBU ~ State, IBUvals, median)
+names(IBUmedians)<- c("State", "Median_IBU")
+head(IBUmedians)
+```
 
+```{r aggregating medians - alcohol content}
+boozecontent<- BeerNBrew %>%
+  group_by(State)
+boozemedians<- aggregate(ABV ~ State, boozecontent, median)
+names(boozemedians)<- c("State", "Median_ABV")
+boozemedians
+```
+### Bar Charts 
+```{r plotting the medians}
+library(ggplot2)
+ggplot(IBUmedians, aes(x=State, y=Median_IBU, fill=State)) + geom_bar(stat= 'identity')
+ggplot(boozemedians, aes(x=State, y=Median_ABV, fill=State)) + geom_bar(stat= 'identity')
 ```
