@@ -1,0 +1,60 @@
+---
+title: "BeerSales"
+author: "Justin Howard, Amber Burnet"
+date: "June 17, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir ='C:/Users/howar/Documents/doingdatascience/BeerSales')
+```
+## Loading the beer data:
+```{r loading beer data}
+file1<- 'C:/Users/howar/Documents/R__working_directory/DDS/msds-6306-doing-data-science/Unit 7/Beers.csv'
+Beers<- read.csv(file1)
+str(Beers)
+head(Beers)
+```
+## Loading the brewery data:
+```{r loading brewiery data}
+file2<- 'C:/Users/howar/Documents/R__working_directory/DDS/msds-6306-doing-data-science/Unit 7/Breweries.csv'
+Breweries<- read.csv(file2)
+str(Breweries)
+head(Breweries)
+```
+## Merging the two datasets on "Brewery_id"
+```{r merging dataset}
+names(Breweries)<- c("Brewery_id", "Brewery_Name", "City", "State")
+BeerNBrew<- merge(Beers, Breweries, by = "Brewery_id")
+head(BeerNBrew)
+tail(BeerNBrew)
+```
+## Counting the number of NA values per column:
+```{r NA counts}
+na_count<- sapply(BeerNBrew, function(x) sum(is.na(x)))
+na_count<- data.frame(na_count)
+na_count
+```  
+#### Observations:
+2 columns contain large numbers of NA values: 
+ABV - 62
+IBU - 1005
+
+## How many breweries are in each state?
+```{r aggregating, warning=F}
+library(dplyr)
+bystate<- BeerNBrew %>%
+  group_by(State) %>%
+  distinct(Brewery_id)
+  
+head(bystate)
+brewcount<- aggregate(Brewery_id ~ State, BeerNBrew, length)
+
+names(brewcount)<- c("State", "Brewery_Count")
+brewcount
+```
+
+```{r }
+
+```
