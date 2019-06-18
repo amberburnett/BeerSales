@@ -52,8 +52,48 @@ head(bystate)
 brewcount<- aggregate(Brewery_id ~ State, BeerNBrew, length)
 
 names(brewcount)<- c("State", "Brewery_Count")
-brewcount
+head(brewcount)
 ```
+## Visualize data with a US map
+First, prepare the data for the map by adding in state names.
+```{r}
+#trimming out whitespace
+brewcount$State<- trimws(brewcount$State, which = "both")
+# a csv with state names matched to abbreviations
+# file<- download.file('http://www.whypad.com/wp-content/uploads/us_states.zip')
+state.abbv<- read.csv('us_states.csv', header = F)
+#give the columns names to reference by
+names(state.abbv)<- c("State.Caps", "State.Name", "State")
+#select only data we need
+addin<- state.abbv %>%
+  select(State.Name, State)
+# make all state names lowercase to match states data
+addin$State.Name<- tolower(addin$State.Name)
+#merge with brewcount dataframe
+brewcount.states<- merge(brewcount, addin, by = "State")
+
+#loading packages
+library(ggmap)
+library(maps)
+library(mapdata)
+
+#make dataframe of states and merge with our data
+states <- map_data("state")
+addbrews<- brewcount.states %>%
+  select(Brewery_Count, State.Name)
+names(addbrews)<- c("Brewery_Count", "region")
+#brewery.map.data<-merge(states, addbrews, by = "region", all.x = T)
+#using merge in this case causes rips in the map, instead, use left_join from dplyr
+brewery.map.data2<- left_join(states, addbrews)
+```
+Make a map with colors based on the number of breweries in each state. We will perform a log transformation on the counts to create a more even standard deviation, which will improve the visualization by making differences more evident.
+```{r}
+ggplot(data = brewery.map.data2) + 
+  geom_polygon(aes(x = long, y = lat, fill = Brewery_Count, group = group), color = "white") + 
+  coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Number of Breweries"))
+```
+Colorado is clearly an outlier for the number of breweries it hosts.
+
 ## Median alcohol content and international bitterness unit for each state.
 ```{r aggregating medians - IBU}
 IBUvals<- BeerNBrew %>%
@@ -71,11 +111,50 @@ boozecontent<- BeerNBrew %>%
   group_by(State)
 boozemedians<- aggregate(ABV ~ State, boozecontent, median)
 names(boozemedians)<- c("State", "Median_ABV")
-boozemedians
+boozemedians<- arrange(boozemedians, boozemedians$Median_ABV)
 ```
 ### Bar Charts 
 ```{r plotting the medians}
 library(ggplot2)
-ggplot(IBUmedians, aes(x=State, y=Median_IBU, fill=State)) + geom_bar(stat= 'identity')
-ggplot(boozemedians, aes(x=State, y=Median_ABV, fill=State)) + geom_bar(stat= 'identity')
+ggplot(IBUmedians, aes(x=reorder(State, -Median_IBU), y=Median_IBU, fill=State)) + geom_bar(stat= 'identity') + guides(fill=F)+ theme(plot.title = element_text(hjust= .5), axis.text.x = element_text(angle=90, vjust = .5)) +
+  ggtitle("Median Bitterness by State") + xlab('State') + ylab('Median IBU Value')
+ggplot(boozemedians, aes(x=reorder(State, -Median_ABV), y=(Median_ABV-.039), fill=Median_ABV)) + geom_bar(stat= 'identity') + 
+  guides(fill=F) + theme(plot.title = element_text(hjust= .5), axis.text.x = element_text(angle=90, vjust = .5)) +
+  ggtitle("Median Alcohol Volumes by State") + ylab('Median - .039')
+```
+Prepping and merging the median IBU the data with the states data. 
+```{r prepping and merging IBU map}
+#trimming out whitespace
+IBUmedians$State<- trimws(IBUmedians$State, which = "both")
+
+#merge with IBUmedians dataframe
+IBUmedians.states<- merge(IBUmedians, addin, by = "State")
+
+addIBU<- IBUmedians.states %>%
+  select(Median_IBU, State.Name)
+names(addIBU)<- c("Median_IBU", "region")
+
+IBU.map<- left_join(states, addIBU)
+
+ggplot(data = IBU.map) + 
+  geom_polygon(aes(x = long, y = lat, fill = Median_IBU, group = group), color = "white") + 
+  coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Median Bitterness by State"))
+```
+
+```{r prepping and merging for ABV map}
+#trimming out whitespace
+boozemedians$State<- trimws(boozemedians$State, which = "both")
+
+#merge with IBUmedians dataframe
+boozemedians.states<- merge(boozemedians, addin, by = "State")
+
+addABV<- boozemedians.states %>%
+  select(Median_ABV, State.Name)
+names(addABV)<- c("Median_ABV", "region")
+
+ABV.map<- left_join(states, addABV)
+
+ggplot(data = ABV.map) + 
+  geom_polygon(aes(x = long, y = lat, fill = Median_ABV, group = group), color = "white") + 
+  coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Median Alcohol Content by State"))
 ```
