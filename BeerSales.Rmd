@@ -94,13 +94,13 @@ ggplot(data = brewery.map.data2) +
   geom_polygon(aes(x = long, y = lat, fill = Brewery_Count, group = group), color = "white") + 
   coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Number of Breweries"))
 ```
-Colorado is clearly an outlier for the number of breweries it hosts. This is helpful, but we will also examine breweries per capita by adding state populations to our dataset. Our data come from the US Census Bureau
+
+Colorado is clearly an outlier for the number of breweries it hosts. This is helpful, but we will also examine breweries per capita by adding state populations to our dataset. Our data come from the US Census Bureau.
 
 ```{r}
 
 #load data with state populations
 pops<- read.csv('C:/Users/howar/Documents/doingdatascience/beersales/statepopulations.csv', head=T)
-head(pops)
 pops<- pops %>%
   select(NAME, POPESTIMATE2018)
 pops$NAME<- tolower(pops$NAME)
@@ -126,24 +126,6 @@ ggplot(data = brews.per.capita.map) +
   theme(plot.title = element_text(hjust = .5)) +
   geom_polygon(aes(x = long, y = lat, fill = Brews.Per.Capita, group = group), color = "white") + 
   coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Breweries per 100,000 People")) 
-
-+
-  scale_x_discrete(limits= c(".00001",".00004"), labels(c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more' ))) 
-
-+
-  scale_fill_discrete(limits= c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more' ))
-
-ggplot(data = brews.per.capita.map) + 
-  ggtitle("Breweries Per Capita") +
-  theme(plot.title = element_text(hjust = .5), legend.text = element) +
-  geom_polygon(aes(x = long, y = lat, fill = factor(Brews.Per.Capita), group = group), color = "white") + 
-  coord_fixed(1.3) + theme_nothing(legend = T)  +
-  scale_color_manual(name = "Breweries per 100,000 People", labels= c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more') )
-  
-
-scale_x_discrete(limits= c(".00001",".00009")) +
-  scale_fill_discrete(limits= c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more' ))
-+ guides(fill=guide_legend(title = "Breweries per 100,000 People"))
 ```
 
 We see that Colorado is still an outlier when we look at the number of breweries per person. Other notable outliers include Vermont, Montana, Oregon and Wyoming. 
@@ -177,6 +159,7 @@ ggplot(boozemedians, aes(x=reorder(State, -Median_ABV), y=(Median_ABV-.039), fil
   guides(fill=F) + theme(plot.title = element_text(hjust= .5), axis.text.x = element_text(angle=90, vjust = .5)) +
   ggtitle("Median Alcohol Volumes by State") + ylab('Median - .039')
 ```
+
 Prepping and merging the median IBU the data with the states data. 
 ```{r prepping and merging IBU map}
 #trimming out whitespace
@@ -226,6 +209,7 @@ ggplot(data = ABV.map) +
   coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "ABV Scale"))
 ```
 
+Utah is a clear outlier, with a near 0 ABV, followed by New Jersey...of all places! Among the states that have the highest median alcohol content are Kentucky and West Virginia. Although it is too small to be shown, our nation's capital allows the highest alcohol content by volume, topping  
 
 ## Maximum Alcoholic(ABV) Beer by State
 ```{r maximum - abv content,echo=TRUE}
@@ -271,6 +255,6 @@ p1 <- ggplot(BeerNBrew, aes(IBU, ABV)) +
   geom_point(size = 3) + geom_smooth(method='lm') + 
   labs(x = "IBU", y = "ABV") + theme_bw() +
   theme(legend.position = "top", legend.text = element_text(size = 12), 
-        legend.title = element_text(size = 14))+ggtitle("Correlation between IBU and ABV")
+        legend.title = element_text(size = 14))+ggtitle("Correlation between Bitterness and Alcohol Content")
 p1
 ```
