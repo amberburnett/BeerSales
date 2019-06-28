@@ -119,12 +119,31 @@ add.per.capita<- brewcount.states %>%
 names(add.per.capita)<- c("Brews.Per.Capita", "region")
 
 brews.per.capita.map<- left_join(states,add.per.capita)
+brews.per.capita.map$Brews.Per.Capita<- round(brews.per.capita.map$Brews.Per.Capita, digits = 6)*100000
 
 ggplot(data = brews.per.capita.map) + 
   ggtitle("Breweries Per Capita") +
   theme(plot.title = element_text(hjust = .5)) +
   geom_polygon(aes(x = long, y = lat, fill = Brews.Per.Capita, group = group), color = "white") + 
-  coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Number of Breweries"))
+  coord_fixed(1.3) + theme_nothing(legend = T) + guides(fill=guide_legend(title = "Breweries per 100,000 People")) 
+
++
+  scale_x_discrete(limits= c(".00001",".00004"), labels(c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more' ))) 
+
++
+  scale_fill_discrete(limits= c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more' ))
+
+ggplot(data = brews.per.capita.map) + 
+  ggtitle("Breweries Per Capita") +
+  theme(plot.title = element_text(hjust = .5), legend.text = element) +
+  geom_polygon(aes(x = long, y = lat, fill = factor(Brews.Per.Capita), group = group), color = "white") + 
+  coord_fixed(1.3) + theme_nothing(legend = T)  +
+  scale_color_manual(name = "Breweries per 100,000 People", labels= c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more') )
+  
+
+scale_x_discrete(limits= c(".00001",".00009")) +
+  scale_fill_discrete(limits= c('less than 1', '1 - 2', '2 - 3', '3 - 4', '5 or more' ))
++ guides(fill=guide_legend(title = "Breweries per 100,000 People"))
 ```
 
 We see that Colorado is still an outlier when we look at the number of breweries per person. Other notable outliers include Vermont, Montana, Oregon and Wyoming. 
@@ -240,7 +259,9 @@ nn
 ``` {r summarystatABV, echo=TRUE}
 dfa<-(BeerNBrew$ABV)
 summary(dfa)
-boxplot(dfa, main="Summary Statistics for ABV")
+ggplot(BeerNBrew, aes(y=ABV, x=" ", fill= " ")) + geom_boxplot() + ggtitle("Summary of Alcohol Content") +
+  theme(plot.title = element_text(hjust = .5), legend.position = "none") + ylab("Percentage of Alcohol Content") +
+  xlab("ABV") + coord_flip()
 ```
 
 ## Question 7: ABV and IBU Correlation.  There is a positive correlatin between the two.
