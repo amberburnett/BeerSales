@@ -5,6 +5,8 @@ date: "June 17, 2019"
 output: html_document
 ---
 
+## Inroduction:  Anheuser-Busch prides itself on “Great Beer is fueled by passion. A passion for brewing and the people who make it.”  We pride ourselves in serving Budweiser and are passionate about further strengthening the industry leading portfolio through our data analysis.  The study came with raw data sets in The Beers csv and The Breweries csv.  The Beers dataset contains a list of 2410 US craft beers and Breweries dataset contains 558 US breweries. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir ='C:/Users/howar/Documents/doingdatascience/BeerSales')
