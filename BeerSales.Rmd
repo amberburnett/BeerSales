@@ -213,7 +213,7 @@ ggplot(data = ABV.map) +
 
 Utah is a clear outlier, with a near 0 ABV, followed by New Jersey...of all places! Among the states that have the highest median alcohol content are Kentucky and West Virginia. Although it is too small to be shown, our nation's capital allows the highest alcohol content by volume, topping  
 
-## Maximum Alcoholic(ABV) Beer by State
+## Maximum Alcoholic(ABV) Beer by State.  The Maximum Alcohol Content by State is .128 in Colorado.
 ```{r maximum - abv content,echo=TRUE}
  maxABV<-max(BeerNBrew$ABV,na.rm=TRUE)
 statemaxABV<-filter(BeerNBrew, ABV==maxABV)
@@ -227,7 +227,7 @@ l<-head(newdata,3)
 mm<-ggplot(l, aes(x=State,y=ABV,fill=State))+geom_bar(stat="identity")+xlab("State")+ylab("ABV")+ggtitle("Top Three States with Highest ABV")+theme_minimal()
 mm
 ```
-## Questin 5 Part B: Maximum IBU Bitterness by State
+## Maximum IBU Bitterness by State.  The Maximum IBU Bitterness by State is 138 in Oregon.
 ```{r maximum - ibu content,echo=TRUE}
  maxIBU<-max(BeerNBrew$IBU,na.rm=TRUE)
 statemaxIBU<-filter(BeerNBrew, IBU==maxIBU)
@@ -241,7 +241,7 @@ n<-head(newdata2,3)
 nn<-ggplot(n, aes(x=State,y=IBU,fill=State))+geom_bar(stat="identity")+xlab("State")+ylab("IBU")+ggtitle("Top Three States with Highest IBU")+theme_minimal()+scale_fill_brewer()
 nn
 ```
-## Question 6 Summary Statistics for the ABV Variable by Summary Function
+## Summary Statistics for the ABV Variable by Summary Function
 ``` {r summarystatABV, echo=TRUE}
 dfa<-(BeerNBrew$ABV)
 summary(dfa)
@@ -250,7 +250,7 @@ ggplot(BeerNBrew, aes(y=ABV, x=" ", fill= " ")) + geom_boxplot() + ggtitle("Summ
   xlab("ABV") + coord_flip()
 ```
 
-## Question 7: ABV and IBU Correlation.  There is a positive correlatin between the two.
+## ABV and IBU Correlation.  There is a positive correlatin between the two.
 ``` {r scatterplot, echo=TRUE}
 library(ggplot2)
 p1 <- ggplot(BeerNBrew, aes(IBU, ABV)) + 
